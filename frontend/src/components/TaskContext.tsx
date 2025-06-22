@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { type ReactNode } from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+// import Row from 'react-bootstrap/Row';
+// import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
 // Since we're using typescript and react,
@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 // To start context setup, we create an interface for Task structure
 export interface Task {
   taskName: string;
-  hoursWorked: number;
+  secondsWorked: number;
 }
 
 // We define our context value interface which is passed to child objects
@@ -18,6 +18,7 @@ interface TaskContextValue {
   tasks: Task[];
   addTask: (task: Task) => void;
   removeTask: (index: number) => void;
+  editTask: (index: number, updatedTask: Task) => void;
   setTasks: (tasks: Task[]) => void;
 }
 
@@ -50,8 +51,12 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
     setTasks(prev => prev.filter((_, i) => i !== index));
   };
 
+  const editTask = (index: number, editedTask: Task) => {
+    setTasks(prev => prev.map((task, i) => (i === index ? editedTask : task)));
+  }
+
   return (
-    <TaskContext.Provider value={{ tasks, addTask, removeTask, setTasks }}>
+    <TaskContext.Provider value={{ tasks, addTask, removeTask, editTask, setTasks }}>
       {children}
     </TaskContext.Provider>
   );
@@ -59,29 +64,24 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
 
 // Component to show task list
 export const TaskList: React.FC = () => {
-  const { tasks, removeTask } = useTaskContext();
+  const { tasks, editTask, removeTask } = useTaskContext();
 
   return (
     <div>
       <h2>Current Task List</h2>
-      <Row>
-        <Col></Col>
-        <Col>
+      <p>Total Hours of Work: {Math.floor(tasks.reduce((sum, task) => sum + task.secondsWorked, 0) / 3600)} Hours {" "}
+        {Math.floor(tasks.reduce((sum, task) => sum + task.secondsWorked, 0) / 3600) % 60} Minutes {" "}
+        {tasks.reduce((sum, task) => sum + task.secondsWorked, 0) % 60} Seconds
+      </p>
           <ul>
             {tasks.map((task, index) => (
               <li key={index}>
-                Worked on <strong>{task.taskName}</strong> for <strong>{task.hoursWorked}</strong> Hours
+                  Worked on <strong>{task.taskName}</strong> for <strong>{Math.floor(task.secondsWorked / 3600)} Hours {Math.floor(task.secondsWorked / 60) % 60} Minutes {task.secondsWorked % 60} Seconds</strong> {" "}
+                <Button variant="warning" onClick={() => editTask(index, task)}>Edit Task</Button>
                 <Button variant="danger" onClick={() => removeTask(index)}>Remove Task</Button>
               </li>
             ))}
         </ul>
-        </Col>
-        <Col></Col>
-      </Row>
-
-      <Row>
-        <Col><p>Total Hours of Work: {tasks.reduce((sum, task) => sum + task.hoursWorked, 0)} Hours</p></Col>
-      </Row>
     </div>
   )
 }
