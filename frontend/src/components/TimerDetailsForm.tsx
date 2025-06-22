@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTaskContext } from "./TaskContext";
 import { type Task } from "./TaskContext";
-import { Button, Modal, Form, FormGroup, Row, Col } from "react-bootstrap";
+import { Button, Modal, Form, FormGroup, Row, Col} from "react-bootstrap";
 
 export const TimerDetailsForm: React.FC = () => {
   const { addTask } = useTaskContext();
@@ -111,7 +111,7 @@ export const TimerDetailsForm: React.FC = () => {
       className="modal show"
       style={{ display: 'block', position: 'initial' }}
     >
-    <Button onClick={handleShow}>Add Task</Button>
+      <Button onClick={handleShow}>Add Tasks</Button>
 
      <Modal show={showModal} onHide={handleClose}>
         <Modal.Dialog>
