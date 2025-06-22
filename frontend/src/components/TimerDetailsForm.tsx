@@ -9,6 +9,7 @@ export const TimerDetailsForm: React.FC = () => {
   const [newSecondsWorked, setNewSecondsWorked] = useState<number>(0);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [isTimerPaused, setIsTimerPaused] = useState<boolean>(false);
 
   // Form Properties
   const [formSeconds, setFormSeconds] = useState<number>(0);
@@ -32,7 +33,7 @@ export const TimerDetailsForm: React.FC = () => {
     // Check for additional error, which would be if all time inputs are zero,
     // and timer is not running.
     if (formSeconds <= 0 && formMinutes <= 0 && formHours <= 0) {
-      if (!isTimerRunning) {
+      if (!isTimerRunning && !isTimerPaused) {
         alert("Please provide time of task.");
         return;
       }
@@ -73,11 +74,17 @@ export const TimerDetailsForm: React.FC = () => {
 
   const handleTimerPause = () => {
     setIsTimerRunning(false);
-    
+    setIsTimerPaused(true);
   }
+
+  const handleTimerUnpause = () => {
+    setIsTimerPaused(false);
+    setIsTimerRunning(true);
+  }  
 
   const handleTimerStop = () => {
     setIsTimerRunning(false);
+    setIsTimerPaused(false);
     setNewSecondsWorked(0);
   }
 
@@ -122,9 +129,8 @@ export const TimerDetailsForm: React.FC = () => {
                   value={newTaskName}
                   onChange={(e) => setNewTaskName(e.target.value)}
                 />
-                {!isTimerRunning ? (
+                {!isTimerRunning && !isTimerPaused? (
                   <div>
-                    
                     <Row>
                       <Col>
                         <Form.Label>Hours</Form.Label>
@@ -165,7 +171,7 @@ export const TimerDetailsForm: React.FC = () => {
 
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>Close</Button>
-            {!isTimerRunning ? (
+            {!isTimerRunning && !isTimerPaused ? (
                 <div>
                   <Button variant="primary" onClick={handleAddTask}>Save Task</Button>
                 <Button variant="info" onClick={() => (handleTimerStart(),
@@ -174,9 +180,10 @@ export const TimerDetailsForm: React.FC = () => {
                   setFormHours(0)
                   )}>Use Timer</Button>
                 </div>) :
-              ( <div>
-                  <Button variant="info" onClick={handleTimerPause}>Pause</Button>
-                  <Button variant="info" onClick={handleTimerReset}>Reset Time</Button>
+              (<div>
+                {isTimerPaused ? (<Button variant="success" onClick={handleTimerUnpause}>Resume</Button>)
+                  : (<Button variant="warning" onClick={handleTimerPause}>Pause</Button>)}
+                  <Button variant="secondary" onClick={handleTimerReset}>Reset Time</Button>
                   <Button variant="info" onClick={handleSubmitTime}>Submit Time and Task</Button>
                 </div>)}
           </Modal.Footer>
