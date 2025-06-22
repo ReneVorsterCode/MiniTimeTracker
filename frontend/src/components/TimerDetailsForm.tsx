@@ -170,7 +170,8 @@ export const TimerDetailsForm: React.FC = () => {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>Close</Button>
+            <Button variant="danger" onClick={() => (handleClose(),
+            handleTimerStop())}>Close</Button>
             {!isTimerRunning && !isTimerPaused ? (
                 <div>
                   <Button variant="primary" onClick={handleAddTask}>Save Task</Button>
